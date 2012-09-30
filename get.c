@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
         logger("connect error");
         return 1;
     }
-    char *request_header = "GET / HTTP/1.1\r\nHost: baidu.com\r\n\r\n";
+    char *request_header = "GET / HTTP/1.1\r\nHost: www.baidu.com\r\n\r\n";
     int request_header_len = strlen(request_header);
     if (send(sockfd, request_header, request_header_len, 0) == -1) {
         logger("send error");
