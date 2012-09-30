@@ -5,4 +5,10 @@
 
 #define MAX_DATA_SIZE = 65535
 
-#define SERVER_IP = ""
+#define SERVER_IP "220.181.111.86"
+#define SERVER_PORT 80
+
+int main(int argc, char **argv) {
+    logger("begin");
+    return 0;
+}
