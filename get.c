@@ -10,5 +10,6 @@
 
 int main(int argc, char **argv) {
     logger("begin");
+	logger("done");
     return 0;
 }
