@@ -37,6 +37,11 @@ int main(int argc, char **argv) {
         logger("recv error");
         return 1;
     }
+    if (numbytes) {
+        buffer[numbytes] = '\0';
+        logger(buffer);
+    }
+    close(sockfd);
     logger("done");
     return 0;
 }
