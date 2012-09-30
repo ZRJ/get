@@ -33,6 +33,10 @@ int main(int argc, char **argv) {
         logger("send error");
         return 1;
     }
+    if ( (numbytes=recv(sockfd, buffer, MAX_DATA_SIZE, 0)) == -1) {
+        logger("recv error");
+        return 1;
+    }
     logger("done");
     return 0;
 }
