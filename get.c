@@ -20,7 +20,13 @@ int main(int argc, char **argv) {
         return 1;
     }
     memset(&server_addr, 0, sizeof(struct sockaddr));
-
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(SERVER_PORT);
+    server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
+    if (connect(sockfd, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) == -1) {
+        logger("connect error");
+        return 1;
+    }
     logger("done");
     return 0;
 }
