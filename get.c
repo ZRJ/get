@@ -15,6 +15,12 @@ int main(int argc, char **argv) {
     char buffer[MAX_DATA_SIZE];
     int sockfd, numbytes;
     struct sockaddr_in server_addr;
+    /* get host by name */
+    struct hsotent *host;
+    if ((host=gethostbyname("www.baidu.com")) == NULL) {
+        logger("get host by name failed");
+        return 1;
+    }
     if ( (sockfd=socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         logger("socket error");
         return 1;
