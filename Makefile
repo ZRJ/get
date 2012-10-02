@@ -1,4 +1,4 @@
 get: get.o logger.o
-	gcc -o -g $@ $^
+	gcc -o $@ $^
 .c.o:
-	gcc -c $<
+	gcc -c -g $<
