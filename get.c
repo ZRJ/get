@@ -4,6 +4,7 @@
 #include <memory.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netdb.h>
 
 #define MAX_DATA_SIZE 65535
 
@@ -16,11 +17,17 @@ int main(int argc, char **argv) {
     int sockfd, numbytes;
     struct sockaddr_in server_addr;
     /* get host by name */
-    struct hsotent *host;
-    if ((host=gethostbyname("www.baidu.com")) == NULL) {
+    struct hostent *host;
+    logger("the domain is");
+    logger(argv[1]);
+    if ((host=gethostbyname(argv[1])) == NULL) {
         logger("get host by name failed");
         return 1;
     }
+    logger("the ip is");
+    char addr_str[32];
+    inet_ntop(host->h_addrtype, host->h_addr_list, addr_str, sizeof(addr_str));
+    logger(addr_str);
     if ( (sockfd=socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         logger("socket error");
         return 1;
@@ -28,12 +35,13 @@ int main(int argc, char **argv) {
     memset(&server_addr, 0, sizeof(struct sockaddr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(SERVER_PORT);
-    server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
+    // server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
+    bcopy(host->h_addr, &(server_addr.sin_addr.s_addr), host->h_length);
     if (connect(sockfd, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) == -1) {
         logger("connect error");
         return 1;
     }
-    char *request_header = "GET / HTTP/1.1\r\nHost: www.baidu.com\r\n\r\n";
+    char *request_header = "GET / HTTP/1.1\r\nHost: www.szucal.com\r\n\r\n";
     int request_header_len = strlen(request_header);
     if (send(sockfd, request_header, request_header_len, 0) == -1) {
         logger("send error");
