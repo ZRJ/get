@@ -24,10 +24,6 @@ int main(int argc, char **argv) {
         logger("get host by name failed");
         return 1;
     }
-    logger("the ip is");
-    char addr_str[32];
-    inet_ntop(host->h_addrtype, host->h_addr_list, addr_str, sizeof(addr_str));
-    logger(addr_str);
     if ( (sockfd=socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         logger("socket error");
         return 1;
@@ -41,7 +37,7 @@ int main(int argc, char **argv) {
         logger("connect error");
         return 1;
     }
-    char *request_header = "GET / HTTP/1.1\r\nHost: www.szucal.com\r\n\r\n";
+    char *request_header = "GET / HTTP/1.1\r\n\r\n";
     int request_header_len = strlen(request_header);
     if (send(sockfd, request_header, request_header_len, 0) == -1) {
         logger("send error");

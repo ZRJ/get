@@ -3,11 +3,8 @@
 #include "logger.h"
 
 int logger(char *msg) {
-    time_t tim;
-    struct tim *at;
-    char now[80];
-    time(&tim);
-    at = localtime(&tim);
-    strftime(now, 79, "%y-%m-%d %H:%M:%S", at);
-    return printf("[%s]%s\n", now, msg);
+    time_t now = time(NULL);
+    char buffer[80];
+    strftime(buffer, 24, "%Y-%m-%d %H:%M:%S", localtime(&now));
+    return printf("[%s]%s\n", buffer, msg);
 }
