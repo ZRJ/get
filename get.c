@@ -12,6 +12,10 @@
 #define SERVER_PORT 80
 
 int main(int argc, char **argv) {
+    if (argc < 2) {
+        logger("Usage: get <donmain>, eg. get baidu.com");
+        return 1;
+    }
     logger("begin");
     char buffer[MAX_DATA_SIZE];
     int sockfd, numbytes;
@@ -37,7 +41,7 @@ int main(int argc, char **argv) {
         logger("connect error");
         return 1;
     }
-    char *request_header = "GET / HTTP/1.1\r\n\r\n";
+    char *request_header = "GET / HTTP/1.0\r\n\r\n";
     int request_header_len = strlen(request_header);
     if (send(sockfd, request_header, request_header_len, 0) == -1) {
         logger("send error");
