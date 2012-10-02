@@ -4,7 +4,7 @@
 
 int logger(char *msg) {
     time_t now = time(NULL);
-    char buffer[80];
-    strftime(buffer, 24, "%Y-%m-%d %H:%M:%S", localtime(&now));
+    char buffer[30];
+    strftime(buffer, 30, "%c", localtime(&now));
     return printf("[%s]%s\n", buffer, msg);
 }
