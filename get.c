@@ -1,4 +1,6 @@
 #include "logger.h"
+#include "url.h"
+
 #include <string.h>
 #include <stdlib.h>
 #include <memory.h>
@@ -17,6 +19,11 @@ int main(int argc, char **argv) {
         return 1;
     }
     logger("begin");
+
+    struct url parse_result;
+    parse_url(argv[1], &parse_result);
+    return 0;
+
     char buffer[MAX_DATA_SIZE];
     int sockfd, numbytes;
     struct sockaddr_in server_addr;

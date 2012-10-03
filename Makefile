@@ -1,4 +1,4 @@
-get: get.o logger.o
+get: get.o logger.o url.o
 	gcc -o $@ $^
 	rm ./*.o
 .c.o:
