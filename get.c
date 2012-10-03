@@ -10,7 +10,6 @@
 
 #define MAX_DATA_SIZE 65535
 
-#define SERVER_IP "220.181.111.86"
 #define SERVER_PORT 80
 
 int main(int argc, char **argv) {
@@ -21,17 +20,16 @@ int main(int argc, char **argv) {
     logger("begin");
 
     struct url parse_result;
-    parse_url(argv[1], &parse_result);
-    return 0;
+    if (parse_url(argv[1], &parse_result) == -1) {
+        return 1;
+    }
 
     char buffer[MAX_DATA_SIZE];
     int sockfd, numbytes;
     struct sockaddr_in server_addr;
     /* get host by name */
     struct hostent *host;
-    logger("the domain is");
-    logger(argv[1]);
-    if ((host=gethostbyname(argv[1])) == NULL) {
+    if ((host=gethostbyname(parse_result.host)) == NULL) {
         logger("get host by name failed");
         return 1;
     }
@@ -48,7 +46,9 @@ int main(int argc, char **argv) {
         logger("connect error");
         return 1;
     }
-    char *request_header = "GET / HTTP/1.0\r\n\r\n";
+    char request_header[1024];
+    sprintf(request_header, "GET %s HTTP/1.1\r\nHost: %s\r\n\r\n", 
+                parse_result.path, parse_result.host);
     int request_header_len = strlen(request_header);
     if (send(sockfd, request_header, request_header_len, 0) == -1) {
         logger("send error");
