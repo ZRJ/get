@@ -3,7 +3,11 @@
 
 struct url {
     char *url; // the original url
-    char *scheme; // the protocal
+    enum scheme {
+        URL_SCHEME_HTTP,
+        URL_SCHEME_HTTPS,
+        URL_SCHEME_FTP
+    }; // the protocal
     char *host;
     int port;
     char *path; // the path to the file
