@@ -2,17 +2,8 @@
 #define _URL_H_INCLUDED_
 
 struct url {
-    char *url; // the origin url
-    enum _scheme {
-        URL_SCHEME_HTTP,
-        URL_SCHEME_HTTPS,
-        URL_SCHEME_FTP
-    } scheme;
-    char *host;
-    int port;
-    char *path;
-    char *query;
-    char *anchor;
+    char host[512];
+    char path[1024];
 };
 
 // parse an url, save the result in the url struct
