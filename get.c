@@ -90,10 +90,12 @@ int main(int argc, char **argv) {
 
     // get response content length
     int response_content_length = get_content_length(response_header);
+    int writen_count = 0;
 
     // storage the remian
     fwrite(header_end_pos+4, numbytes-header_len-4, 1, fp);
     fflush(fp);
+    writen_count += numbytes - header_len - 4;
 
     // storage response body
     while(numbytes=recv(sockfd, buffer, BUFFER_DATA_SIZE, 0)) {
@@ -103,7 +105,15 @@ int main(int argc, char **argv) {
         }
         fwrite(buffer, numbytes, 1, fp);
         fflush(fp);
-        logger("looping write");
+        writen_count += numbytes;
+        if (writen_count == response_content_length) {
+            logger("write all content");
+            break;
+        }
+        char write_process[100] = {0};
+        sprintf(write_process, "looping write %d/%d", 
+                writen_count, response_content_length);
+        logger(write_process);
     }
     logger("write done");
     
