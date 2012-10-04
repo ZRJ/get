@@ -61,12 +61,36 @@ int main(int argc, char **argv) {
         logger("open file failed");
         return 1;
     }
+    // get response header
+    char response_buffer[1024] = {0};
+    numbytes = recv(sockfd, response_buffer, sizeof(response_buffer), 0);
+    if (numbytes == -1) {
+        logger("recv error");
+        return 1;
+    }
+    char *header_end_pos = strstr(response_buffer, "\r\n\r\n");
+    if (header_end_pos == NULL) {
+        logger("can not find header");
+        return 1;
+    }
+    char response_header[1024] = {0};
+    int header_len = header_end_pos - response_buffer;
+    strncpy(response_header, response_buffer, header_len);
+    logger("header is");
+    logger(response_header);
+
+    // storage the remian
+    fwrite(header_end_pos+4, numbytes-header_len, 1, fp);
+    fflush(fp);
+
+    // storage response body
     while(numbytes=recv(sockfd, buffer, MAX_DATA_SIZE, 0)) {
         if (numbytes == -1) {
             logger("recv error");
             return 1;
         }
         fwrite(buffer, numbytes, 1, fp);
+        fflush(fp);
         logger("looping write");
     }
     logger("write done");
