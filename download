@@ -27,7 +27,7 @@
 				font-family: "微软雅黑";
 				font-weight:lighter;
 			}
-		HTTP	img{
+			img{
 				float:left;
 				margin-left:50px;
 				display:block;

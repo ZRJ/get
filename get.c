@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
     logger(response_header);
 
     // storage the remian
-    fwrite(header_end_pos+4, numbytes-header_len, 1, fp);
+    fwrite(header_end_pos+4, numbytes-header_len-4, 1, fp);
     fflush(fp);
 
     // storage response body
