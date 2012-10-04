@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>SzuCal</title>
+		<style type="text/css">
+			body{
+				background-color:#ddd;
+			}
+			div{
+				width:960px;
+				margin:30px auto;
+			}
+			h7{
+				float:left;
+				margin-left:120px;
+				margin-top:400px;
+				font-size:80px;
+				font-family: "微软雅黑";
+				font-weight:lighter;
+			}
+			p{
+				float:left;
+				margin-left:50px;
+				margin-top:420px;
+				font-size:20px;
+				font-family: "微软雅黑";
+				font-weight:lighter;
+			}
+		HTTP	img{
+				float:left;
+				margin-left:50px;
+				display:block;
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<p>在SzuCal<br/><br/>你可以用一种简单方便的方式浏览课程表<br/><br/>现在就试试用手机访问 szucal.com 吧</p>
+			<!-- <p>PC版即将登场</p> -->
+			<img src="./preview.jpg" alt="预览图" />
+		</div>
+		<script type="text/javascript">
+			var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : "		http://");
+			document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F23a987c4119a3d18ed280264670cc650' type='text/javascript'%3E%3C/script%3E"));
+		</script>
+	</body>
+</html>
