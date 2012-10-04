@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
     }
 
     // get response header
-    char buffer[BUFFER_DATA_SIZE];
+    char buffer[BUFFER_DATA_SIZE] = {0};
     int numbytes = recv(sockfd, buffer, BUFFER_DATA_SIZE, 0);
     if (numbytes == -1) {
         logger("recv error");
@@ -101,9 +101,10 @@ int main(int argc, char **argv) {
         fflush(fp);
         logger("looping write");
     }
-
     logger("write done");
+    
     close(sockfd);
     logger("done");
+
     return 0;
 }
