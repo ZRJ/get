@@ -1,5 +1,3 @@
-// some chagne
-
 #include "logger.h"
 #include "url.h"
 
@@ -11,7 +9,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
-#define MAX_DATA_SIZE 65535
+#define MAX_DATA_SIZE 1024
 
 #define SERVER_PORT 80
 
@@ -57,14 +55,21 @@ int main(int argc, char **argv) {
         logger("send error");
         return 1;
     }
-    if ( (numbytes=recv(sockfd, buffer, MAX_DATA_SIZE, 0)) == -1) {
-        logger("recv error");
+
+    FILE *fp = fopen("download", "w+");
+    if (fp == NULL) {
+        logger("open file failed");
         return 1;
     }
-    if (numbytes) {
-        buffer[numbytes] = '\0';
-        logger(buffer);
+    while(numbytes=recv(sockfd, buffer, MAX_DATA_SIZE, 0)) {
+        if (numbytes == -1) {
+            logger("recv error");
+            return 1;
+        }
+        fwrite(buffer, numbytes, 1, fp);
+        logger("looping write");
     }
+    logger("write done");
     close(sockfd);
     logger("done");
     return 0;
