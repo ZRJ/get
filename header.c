@@ -8,8 +8,8 @@ int get_content_length(const char *header) {
     char h[1024] = {0};
     strcpy(h, header);
 
-    char *content_length_begin_pos = strstr(h, "Content-Length")
-                                || strstr(h, "content-length");
+    char *content_length_begin_pos = (char *)(strstr(h, "Content-Length")
+                                || strstr(h, "content-length"));
     if (content_length_begin_pos == NULL) {
         return -1;
     }
