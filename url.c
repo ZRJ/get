@@ -13,8 +13,10 @@ int parse_url(const char *url, struct url *rst) {
         logger("url too long");
         return -1;
     }
-    char url_cpy[1024];
+    char url_cpy[1024] = {0};
     strcpy(url_cpy, url);
+    logger("the origin url is");
+    logger(url_cpy);
     
     char *scheme_begin_pos = strstr(url_cpy, "://");
     if (scheme_begin_pos) {

@@ -70,20 +70,20 @@ int main(int argc, char **argv) {
     }
 
     // get response header
-    char response_buffer[1024] = {0};
-    int numbytes = recv(sockfd, response_buffer, sizeof(response_buffer), 0);
+    char buffer[BUFFER_DATA_SIZE];
+    int numbytes = recv(sockfd, buffer, BUFFER_DATA_SIZE, 0);
     if (numbytes == -1) {
         logger("recv error");
         return 1;
     }
-    char *header_end_pos = strstr(response_buffer, "\r\n\r\n");
+    char *header_end_pos = strstr(buffer, "\r\n\r\n");
     if (header_end_pos == NULL) {
         logger("can not find header");
         return 1;
     }
     char response_header[1024] = {0};
-    int header_len = header_end_pos - response_buffer;
-    strncpy(response_header, response_buffer, header_len);
+    int header_len = header_end_pos - buffer;
+    memcpy(response_header, buffer, header_len);
     logger("header is");
     logger(response_header);
 
@@ -92,7 +92,6 @@ int main(int argc, char **argv) {
     fflush(fp);
 
     // storage response body
-    char buffer[BUFFER_DATA_SIZE];
     while(numbytes=recv(sockfd, buffer, BUFFER_DATA_SIZE, 0)) {
         if (numbytes == -1) {
             logger("recv error");
