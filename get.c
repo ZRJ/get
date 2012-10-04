@@ -108,10 +108,6 @@ int main(int argc, char **argv) {
         fwrite(buffer, numbytes, 1, fp);
         fflush(fp);
         writen_count += numbytes;
-        if (writen_count == response_content_length) {
-            logger("write all content");
-            break;
-        }
         char write_process[100] = {0};
         sprintf(write_process, "looping write %d/%d", 
                 writen_count, response_content_length);
