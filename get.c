@@ -1,5 +1,6 @@
 #include "logger.h"
 #include "url.h"
+#include "header.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -86,6 +87,9 @@ int main(int argc, char **argv) {
     memcpy(response_header, buffer, header_len);
     logger("header is");
     logger(response_header);
+
+    // get response content length
+    int response_content_length = get_content_length(response_header);
 
     // storage the remian
     fwrite(header_end_pos+4, numbytes-header_len-4, 1, fp);
