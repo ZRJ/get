@@ -53,8 +53,10 @@ int main(int argc, char **argv) {
 
     // bulid request header
     char request_header[1024];
-    sprintf(request_header, "GET %s HTTP/1.1\r\nHost: %s\r\n\r\n", 
+    sprintf(request_header, "GET %s HTTP/1.1\r\nHost: %s\r\nConnection: close\r\n\r\n", 
                 parse_result.path, parse_result.host);
+    logger("request header is");
+    logger(request_header);
     int request_header_len = strlen(request_header);
 
     // send request header
