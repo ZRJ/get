@@ -27,8 +27,8 @@ struct thread_param {
 void* download_thread(void *param) {
     logger("in download thread");
 
-    logger("locking");
-    pthread_mutex_lock(&mut);
+    // logger("locking");
+    // pthread_mutex_lock(&mut);
 
     struct thread_param *request_param = (struct thread_param *)param;
     
@@ -130,8 +130,8 @@ void* download_thread(void *param) {
     logger("write done");
     fclose(fp);
     
-    logger("freeing lock");
-    pthread_mutex_unlock(&mut);
+    // logger("freeing lock");
+    // pthread_mutex_unlock(&mut);
 
     close(sockfd);
 
@@ -218,25 +218,30 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    // calculate rage
+    char thread0_range_end[10] = {0};
+    sprintf(thread0_range_end, "%d", response_content_length/2);
+    char thread1_range_begin[10] = {0};
+    sprintf(thread1_range_begin, "%d", response_content_length/2+1);
+
     pthread_mutex_init(&mut, NULL);
     memset(&thread, 0, sizeof(thread));
-    
+
     // begin thread 1
     struct thread_param param1;
     strcpy(param1.url, argv[1]);
-    strcpy(param1.range[0], "30000");
+    strcpy(param1.range[0], thread1_range_begin);
     strcpy(param1.range[1], "");
     if (pthread_create(&thread[1], NULL, download_thread, (void *)(&param1)) != 0) {
         logger("create thread failed");
         return 1;
     }
-    sleep(2);
     
     // begin thread 0
     struct thread_param param0;
     strcpy(param0.url, argv[1]);
     strcpy(param0.range[0], "0");
-    strcpy(param0.range[1], "29999");
+    strcpy(param0.range[1], thread0_range_end);
     if (pthread_create(&thread[0], NULL, download_thread, (void *)(&param0)) != 0) {
         logger("create thread failed");
         return 1;
