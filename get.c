@@ -18,25 +18,34 @@
 pthread_t thread[2];
 pthread_mutex_t mut;
 
-int download_thread(char **argv) {
+char argv_url[1024];
+
+struct thread_param {
+    char url[1024];
+    int range[2];
+};
+
+void* download_thread(void *param) {
     logger("in download thread");
+
+    struct thread_param *request_param = (struct thread_param *)param;
     
     // parse url and get ip address
     struct url parse_result;
-    if (parse_url(argv[1], &parse_result) == -1) {
-        return 1;
+    if (parse_url(request_param->url, &parse_result) == -1) {
+        pthread_exit(NULL);
     }
     struct hostent *host;
     if ((host=gethostbyname(parse_result.host)) == NULL) {
         logger("get host by name failed");
-        return 1;
+        pthread_exit(NULL);
     }
 
     // init socket
     int sockfd;
     if ( (sockfd=socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         logger("socket error");
-        return 1;
+        pthread_exit(NULL);
     }
     struct sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(struct sockaddr));
@@ -48,7 +57,7 @@ int download_thread(char **argv) {
     // connect to server
     if (connect(sockfd, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) == -1) {
         logger("connect error");
-        return 1;
+        pthread_exit(NULL);
     }
 
     // bulid request header
@@ -62,14 +71,17 @@ int download_thread(char **argv) {
     // send request header
     if (send(sockfd, request_header, request_header_len, 0) == -1) {
         logger("send error");
-        return 1;
+        pthread_exit(NULL);
     }
     
+    logger("locking");
+    pthread_mutex_lock(&mut);
+
     // open a file to storage data
     FILE *fp = fopen("download", "w+");
     if (fp == NULL) {
         logger("open file failed");
-        return 1;
+        pthread_exit(NULL);
     }
 
     // get response header
@@ -77,12 +89,12 @@ int download_thread(char **argv) {
     int numbytes = recv(sockfd, buffer, BUFFER_DATA_SIZE, 0);
     if (numbytes == -1) {
         logger("recv error");
-        return 1;
+        pthread_exit(NULL);
     }
     char *header_end_pos = strstr(buffer, "\r\n\r\n");
     if (header_end_pos == NULL) {
         logger("can not find header");
-        return 1;
+        pthread_exit(NULL);
     }
     char response_header[1024] = {0};
     int header_len = header_end_pos - buffer;
@@ -103,7 +115,7 @@ int download_thread(char **argv) {
     while((numbytes=recv(sockfd, buffer, BUFFER_DATA_SIZE, 0))) {
         if (numbytes == -1) {
             logger("recv error");
-            return 1;
+            pthread_exit(NULL);
         }
         fwrite(buffer, numbytes, 1, fp);
         fflush(fp);
@@ -114,11 +126,15 @@ int download_thread(char **argv) {
         logger(write_process);
     }
     logger("write done");
+    fclose(fp);
     
+    logger("freeing lock");
+    pthread_mutex_unlock(&mut);
+
     close(sockfd);
 
     logger("finish download thread");
-    return 0;
+    pthread_exit(NULL);
 }
 
 int main(int argc, char **argv) {
@@ -128,8 +144,18 @@ int main(int argc, char **argv) {
     }
 
     logger("begin");
-   
-    download_thread(argv);
+    struct thread_param param;
+    strcpy(param.url, argv[1]);
+    param.range[0] = 0;
+    param.range[1] = 30000;
+    
+    pthread_mutex_init(&mut, NULL);
+    memset(&thread, 0, sizeof(thread));
+    if (pthread_create(&thread[0], NULL, download_thread, (void *)(&param)) != 0) {
+        logger("create thread failed");
+        return 1;
+    }
+    pthread_join(thread[0], NULL);
 
     logger("done");
 
