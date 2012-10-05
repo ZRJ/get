@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
     char response_header[1024] = {0};
     int header_len = header_end_pos - buffer;
     memcpy(response_header, buffer, header_len);
-    logger("header is");
+    logger("response header is");
     logger(response_header);
 
     // get response content length
