@@ -18,11 +18,9 @@
 pthread_t thread[2];
 pthread_mutex_t mut;
 
-char argv_url[1024];
-
 struct thread_param {
     char url[1024];
-    int range[2];
+    char range[2][10];
 };
 
 void* download_thread(void *param) {
@@ -62,8 +60,8 @@ void* download_thread(void *param) {
 
     // bulid request header
     char request_header[1024];
-    sprintf(request_header, "GET %s HTTP/1.1\r\nHost: %s\r\nConnection: close\r\n\r\n", 
-                parse_result.path, parse_result.host);
+    sprintf(request_header, "GET %s HTTP/1.1\r\nHost: %s\r\nRange: bytes=%s-%s\r\nConnection: close\r\n\r\n", 
+                parse_result.path, parse_result.host, request_param->range[0], request_param->range[1]);
     logger("request header is");
     logger(request_header);
     int request_header_len = strlen(request_header);
@@ -78,7 +76,7 @@ void* download_thread(void *param) {
     pthread_mutex_lock(&mut);
 
     // open a file to storage data
-    FILE *fp = fopen("download", "w+");
+    FILE *fp = fopen("download", "a+");
     if (fp == NULL) {
         logger("open file failed");
         pthread_exit(NULL);
@@ -146,9 +144,9 @@ int main(int argc, char **argv) {
     logger("begin");
     struct thread_param param;
     strcpy(param.url, argv[1]);
-    param.range[0] = 0;
-    param.range[1] = 30000;
-    
+    strcpy(param.range[0], "0");
+    strcpy(param.range[1], "");
+
     pthread_mutex_init(&mut, NULL);
     memset(&thread, 0, sizeof(thread));
     if (pthread_create(&thread[0], NULL, download_thread, (void *)(&param)) != 0) {
