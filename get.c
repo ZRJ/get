@@ -26,6 +26,9 @@ struct thread_param {
 void* download_thread(void *param) {
     logger("in download thread");
 
+    logger("locking");
+    pthread_mutex_lock(&mut);
+
     struct thread_param *request_param = (struct thread_param *)param;
     
     // parse url and get ip address
@@ -72,15 +75,15 @@ void* download_thread(void *param) {
         pthread_exit(NULL);
     }
     
-    logger("locking");
-    pthread_mutex_lock(&mut);
-
     // open a file to storage data
     FILE *fp = fopen("download", "a+");
     if (fp == NULL) {
         logger("open file failed");
         pthread_exit(NULL);
     }
+
+    // seek to the begin position
+    fseek(fp, atoi(request_param->range[0]), SEEK_SET);
 
     // get response header
     char buffer[BUFFER_DATA_SIZE] = {0};
@@ -119,8 +122,8 @@ void* download_thread(void *param) {
         fflush(fp);
         writen_count += numbytes;
         char write_process[100] = {0};
-        sprintf(write_process, "looping write %d/%d", 
-                writen_count, response_content_length);
+        sprintf(write_process, "looping write %d/%d, download range is %s - %s", 
+                writen_count, response_content_length, request_param->range[0], request_param->range[1]);
         logger(write_process);
     }
     logger("write done");
@@ -142,18 +145,34 @@ int main(int argc, char **argv) {
     }
 
     logger("begin");
-    struct thread_param param;
-    strcpy(param.url, argv[1]);
-    strcpy(param.range[0], "0");
-    strcpy(param.range[1], "");
 
     pthread_mutex_init(&mut, NULL);
     memset(&thread, 0, sizeof(thread));
-    if (pthread_create(&thread[0], NULL, download_thread, (void *)(&param)) != 0) {
+
+    // begin thread 0
+    struct thread_param param0;
+    strcpy(param0.url, argv[1]);
+    strcpy(param0.range[0], "0");
+    strcpy(param0.range[1], "29999");
+    if (pthread_create(&thread[0], NULL, download_thread, (void *)(&param0)) != 0) {
         logger("create thread failed");
         return 1;
     }
+    sleep(2);
+    
+    // begin thread 1
+    struct thread_param param1;
+    strcpy(param1.url, argv[1]);
+    strcpy(param1.range[0], "30000");
+    strcpy(param1.range[1], "");
+    if (pthread_create(&thread[1], NULL, download_thread, (void *)(&param1)) != 0) {
+        logger("create thread failed");
+        return 1;
+    }
+
+    // waiting for threads end
     pthread_join(thread[0], NULL);
+    pthread_join(thread[1], NULL);
 
     logger("done");
 
