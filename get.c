@@ -6,20 +6,20 @@
 #include <string.h>
 #include <stdlib.h>
 #include <memory.h>
+#include <pthread.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <unistd.h>
 
 #define BUFFER_DATA_SIZE 1024
 #define SERVER_PORT 80
 
-int main(int argc, char **argv) {
-    if (argc < 2) {
-        logger("Usage: get <donmain>, eg. get baidu.com");
-        return 1;
-    }
+pthread_t thread[2];
+pthread_mutex_t mut;
 
-    logger("begin");
+int download_thread(char **argv) {
+    logger("in download thread");
     
     // parse url and get ip address
     struct url parse_result;
@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
     writen_count += numbytes - header_len - 4;
 
     // storage response body
-    while(numbytes=recv(sockfd, buffer, BUFFER_DATA_SIZE, 0)) {
+    while((numbytes=recv(sockfd, buffer, BUFFER_DATA_SIZE, 0))) {
         if (numbytes == -1) {
             logger("recv error");
             return 1;
@@ -116,6 +116,21 @@ int main(int argc, char **argv) {
     logger("write done");
     
     close(sockfd);
+
+    logger("finish download thread");
+    return 0;
+}
+
+int main(int argc, char **argv) {
+    if (argc < 2) {
+        logger("Usage: get <donmain>, eg. get baidu.com");
+        return 1;
+    }
+
+    logger("begin");
+   
+    download_thread(argv);
+
     logger("done");
 
     return 0;
